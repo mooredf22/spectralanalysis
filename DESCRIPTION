@@ -1,0 +1,23 @@
+Package: spectralanalysis
+Title: compare spectral count data
+Version: 0.1.1
+Date: 2021-05-22
+Authors@R:
+    person(given = "Dirk",
+           family = "Moore",
+           role = c("aut", "cre"),
+           email = "dirk.moore@rutgers.edu")
+Description: .
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.5.0)
+RoxygenNote: 6.1.1.9000
+Imports:
+    BiocManager,
+    qvalue
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+URL: http//github.com/mooredf22/spectralanalyze

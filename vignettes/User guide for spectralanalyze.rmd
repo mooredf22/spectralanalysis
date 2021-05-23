@@ -1,0 +1,117 @@
+---
+title: "Vignette - Users guide to spectralanalysis"
+author: "Dirk F Moore"
+date: "5/23/2021"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction to spectral count data
+
+This package is designed to compare protein spectral count data derived from an experiment comparing two samples.
+
+## Installing the `spectralanalysis` package
+
+This package requires the `qvalue` package in Bioconductor. The following commands check for the presence of the Bioconductor installation facility
+
+```{r, echo=TRUE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+install.packages("BiocManager")
+```
+
+Now install the `qvalue` package from Bioconductor:
+
+```
+BiocManager::install("qvalue")
+```
+
+Since the `spectralanalysis` package is on github, before installing it we must install the `devtools` package from CRAN, by typing
+
+```
+install.packages("devtools")
+```
+
+Then install the `spectralanalysis` package from the github repository by typing
+
+```
+devtools::install_github("mooredf22/spectralanalysis")
+```
+
+We also will need the `Hmisc` package:
+
+```
+install.packages("Hmisc")
+```
+
+Now attach the `spectralanalyze`, `qvalue`, and `Hmisc` packages:
+
+```{r, echo=TRUE}
+library(spectralanalysis)
+library(qvalue)
+library(Hmisc)
+```
+
+We may inspect the data set `spectralData_ClN1_late` as follows:
+
+```{r, echo=TRUE}
+str(spectralData_CLN1_late)
+```
+
+We may examine the names as follows:
+
+```{r, echo=TRUE}
+names(spectralData_CLN1_late)
+```
+Now we may extract the values for animal 1 as follows:
+
+```{r, echo=TRUE}
+clnWt1 <- spectralData_CLN1_late[,c(1,2,8)]
+head(clnWt1)
+proteincount <- clnWt1 
+```
+
+
+Give a list of odds (and odds ratios) to test as null hypotheses:
+
+```{r, echo=TRUE}
+odds.list <- c(1,2)
+```
+
+Now compare the cln and wt groups:
+
+```{r, echo=TRUE}
+result <- proteinCountCompare(proteincount)
+```
+The function returns a list of data frames:
+1. Wilson 95% confidence intervals
+2. P-values for each protein based on a binomial comparison
+3. Q-values for these
+4. P-values for each protein based on Fisher's exact test
+5. Q-values for these
+
+```{r, echo=TRUE}
+names(result)
+head(result$wilson.AB)
+head(result$pval.AB)
+head(result$qval.AB)
+head(result$fisher.odds)
+head(result$pval.AB.f)
+head(result$qval.AB.f)
+```
+
+```{r, echo=TRUE}
+protein.mult.pval <- data.frame(proteincount," ",result$wilson.AB," ",result$pval.AB," ",
+            result$qval.AB," ",result$fisher.odds," ",
+            result$pval.AB.f," ",result$qval.AB.f)
+head(protein.mult.pval)
+```
+
+We may write out the results to an external directory as follows:
+```
+setwd("c:\\temp")
+write.csv(protein.mult.pval,file="Cln1Wt1.csv", row.names=F)
+```
+

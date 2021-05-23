@@ -49,10 +49,13 @@ fisher.prot <- function(A,B,or=1) {
 
 
 
-proteinCountCompare <- function(A, B) {
+proteinCountCompare <- function(proteincount) {
+  protNames <- proteincount[,1]
+  A <- proteincount[,2]
+  B <- proteincount[,3]
   wilson.AB <- binconf(A,A+B,method="wilson")
-  wilson.AB <- data.frame(wilson.AB)
-  names(wilson.AB) <- c("prop","Wilson.low","Wilson.high")
+  wilson.AB <- data.frame(protNames, wilson.AB)
+  names(wilson.AB) <- c("protNames", "prop","Wilson.low","Wilson.high")
 
   n.odds <- length(odds.list)
 
@@ -64,15 +67,17 @@ proteinCountCompare <- function(A, B) {
    qval.AB.i <- qvalue(pval.AB.i,lambda=0)$qvalues
    qval.AB.mat[,i] <- qval.AB.i
    }
-  pval.AB <- data.frame(pval.AB.mat)
-  qval.AB <- data.frame(qval.AB.mat)
+  pval.AB <- data.frame(protNames,pval.AB.mat)
+  qval.AB <- data.frame(protNames,qval.AB.mat)
 
   for (i in 1:n.odds) {
     names.i <- paste("pval.",odds.list[i],sep="")
-    names(pval.AB)[i] <- names.i
+    names(pval.AB)[i+1] <- names.i
     names.q.i <- paste("qval.",odds.list[i],sep="")
-    names(qval.AB)[i] <- names.q.i
-    }
+    names(qval.AB)[i+1] <- names.q.i
+  }
+  names(pval.AB)[1] <- "protName"
+  names(qval.AB)[1] <- "protName"
 
 
   pval.AB.f.mat <- matrix(NA,nrow=length(A),ncol=n.odds)
@@ -85,16 +90,18 @@ proteinCountCompare <- function(A, B) {
     pval.AB.f.mat[,i] <- pval.AB.f.i
     qval.AB.f.mat[,i] <- qval.AB.f.i
     }
-  pval.AB.f <- data.frame(pval.AB.f.mat)
-  qval.AB.f <- data.frame(qval.AB.f.mat)
+  pval.AB.f <- data.frame(protNames, pval.AB.f.mat)
+  qval.AB.f <- data.frame(protNames, qval.AB.f.mat)
 
   for (i in 1:n.odds) {
     names.f.i <- paste("pval.fish.",odds.list[i],sep="")
-    names(pval.AB.f)[i] <- names.f.i
+    names(pval.AB.f)[i+1] <- names.f.i
     names.f.q.i <- paste("qval.fish.",odds.list[i],sep="")
-    names(qval.AB.f)[i] <- names.f.q.i
-    }
-  fisher.odds <- fisher.out[,1:3]
+    names(qval.AB.f)[i+1] <- names.f.q.i
+  }
+  names(pval.AB.f)[1] <- "protName"
+  names(qval.AB.f)[1] <- "protName"
+  fisher.odds <- data.frame(protNames, fisher.out[,1:3])
   result <- list(wilson.AB=wilson.AB, pval.AB=pval.AB, qval.AB=qval.AB,
                  fisher.odds=fisher.odds, pval.AB.f=pval.AB.f, qval.AB.f=qval.AB.f)
   result
